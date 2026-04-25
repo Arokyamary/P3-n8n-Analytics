@@ -1,11 +1,14 @@
 P3: n8n Intelligent Analytics Automation
+
 An automated analytics pipeline that queries PostgreSQL, generates AI executive reports using Groq LLaMA 3, sends Slack alerts, and auto-refreshes a Google Sheets dashboard — eliminating 3+ hours of daily manual reporting.
+
 🛠️ Tech Stack
 n8n — Workflow Automation
 PostgreSQL — Database
 Groq LLaMA 3 — AI Report Generation
 Slack — Alerts & Notifications
 Google Sheets — Live Dashboard
+
 📊 Workflows
 Workflow 1: AI Daily Executive Report — Runs at 8 AM, queries PostgreSQL, Groq AI writes executive summary, sends to Slack
 Workflow 2: Demand Anomaly Alerts — Runs every 15 minutes, detects demand spikes, sends instant Slack alert
