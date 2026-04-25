@@ -15,8 +15,11 @@ Workflow 2: Demand Anomaly Alerts — Runs every 15 minutes, detects demand spik
 Workflow 3: Google Sheets Auto-Refresh — Runs at 7 AM, appends daily KPIs to Analytics Dashboard
 
 P3_n8n_Automation/
+
 ├── n8n_workflows/
+
 │   ├── workflow1_ai_daily_report.json
+
 │   ├── workflow2_anomaly_alerts.json
 │   └── workflow3_google_sheets.json
 ├── screenshots/
