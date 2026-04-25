@@ -1,0 +1,164 @@
+{
+  "name": "Anomaly Alerts",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -304,
+        -32
+      ],
+      "id": "550e7e0f-0fc2-4db0-9518-04e4d83554e7",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT category, city,\nCOUNT(*) AS orders_15min,\nSUM(total_amount) AS revenue_15min\nFROM order_events\nWHERE event_time >= NOW() - INTERVAL '15 minutes'\nGROUP BY category, city\nHAVING COUNT(*) > 30\nORDER BY orders_15min DESC",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -96,
+        -32
+      ],
+      "id": "9309b786-fed1-40a2-9622-004c742fda75",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "H0QrTpWJaG5Lf8Gi",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7a06d18d-9967-4b32-990f-9b2713bc3dbd",
+              "leftValue": "={{ $input.all().length}}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "c66a6683-dc09-40a0-8102-f901823e6505",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        112,
+        -32
+      ],
+      "id": "15dc4489-bd0a-4679-aaa0-21506d6db6aa",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "#all-data-anayst",
+          "mode": "name"
+        },
+        "text": "=DEMAND SPIKE ALERT! Category: {{ $json.category }} in {{ $json.city }} Orders last 15 min: {{ $json.orders_15min }} Revenue: Rs {{ $json.revenue_15min }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        272,
+        0
+      ],
+      "id": "d1486ee7-993e-4793-8bb0-0982dc847475",
+      "name": "Send a message",
+      "webhookId": "437c9ffc-63fb-49dc-aef5-60ece33642a3",
+      "credentials": {
+        "slackApi": {
+          "id": "vHsvy8k1l4HzcG4K",
+          "name": "Slack account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3d705fef-3a34-4063-96b7-09eb5e1d8a39",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c98e1beec1e19d999b727849fd80beddad41589f6a98fda471a93475c38c7f5e"
+  },
+  "id": "iGh6tAmxU3dYQfxP",
+  "tags": []
+}
